@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios'
+import { Link } from 'react-router-dom'
 
 const Users = () => {
     const [users,setUser] = useState([])
@@ -40,7 +41,7 @@ useEffect(() =>{
                     <td>{users.email}</td>
                     <td>{users.contact}</td>
                     <td>
-                        <button>Edit</button>
+                        <button><Link to={`/edit-user/${users.id}`}>Edit</Link></button>
                         <button style={{ backgroundColor: 'red', color: 'white' }}>Delete</button>
                     </td>
                 </tr>

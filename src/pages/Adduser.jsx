@@ -1,9 +1,11 @@
 import React from 'react'
 import { Formik  } from "formik";
 import * as Yup from "yup";
-
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Adduser = () => {
+  const navigate = useNavigate();
   return (
     <>
       <div className="app">
@@ -12,6 +14,15 @@ const Adduser = () => {
        onSubmit={async values => {
         await new Promise(resolve => setTimeout(resolve, 500));
         alert(JSON.stringify(values, null, 2));
+
+        axios.post("https://67d15eb7825945773eb411e2.mockapi.io/api/v1/users",values)
+        .then(res =>{
+          console.log(res)
+          navigate("/")
+        })
+        .catch(err =>{
+          console.log(err)
+        })
       }}
       ///yup
       validationSchema={Yup.object().shape({
@@ -23,19 +34,16 @@ const Adduser = () => {
           .email('invalid email')
           .required("Email is Required"),
           
-      password:Yup.string()
-          .required("Password is Required")
+          password: Yup.string()
+          .required("Password must contain at least 10 characters, one uppercase, one lowercase, one digit, and one special character")
           .matches(
-     /^.*(?=.{10,})((?=.*[!@#$%^&*()\-_=+{};:,<.>]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
-  "Password must contain at least 10 characters, one uppercase,one lowercase, one digit and one special character"),
-    confirmpassword:  
-    Yup
-    .string()
-    .required("Please confirm your password")
-    .when("password", {
-      is: password => (password && password.length > 0 ? true : false),
-      then: Yup.string().oneOf([Yup.ref("password")], "Password doesn't match")
-    })
+            /^.*(?=.{10,})((?=.*[!@#$%^&*()\-_=+{};:,<.>]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
+            "Password must contain at least 10 characters, one uppercase, one lowercase, one digit, and one special character"
+          ),
+        
+        confirmpassword: Yup.string()
+          .required("Please confirm your password")
+          .oneOf([Yup.ref('password'), null], "Passwords don't match")
 })}
       >
       {props => {
@@ -98,7 +106,8 @@ const Adduser = () => {
             <input
               id="password"
               placeholder="Enter your password"
-              type="password"
+              name='password'
+              type='password'
               value={values.password}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -117,7 +126,8 @@ const Adduser = () => {
             <input
               id="confirmpassword"
               placeholder="Enter your password"
-              type="password"
+              type='password'
+              name="confirmpassword"
               value={values.confirmpassword}
               onChange={handleChange}
               onBlur={handleBlur}
